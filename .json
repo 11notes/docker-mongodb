@@ -1,0 +1,21 @@
+{
+  "image": "11notes/mongodb",
+  "name": "mongodb",
+  "root": "/mongodb",
+  "semver": {
+    "version": "4.4.30"
+  },
+  "readme": {
+    "description": "run mongodb rootless",
+    "introduction": "[MongoDB](https://github.com/mongodb/mongo) (created by [mongodb](https://github.com/mongodb/)) the popular, open-source NoSQL document-oriented database designed for handling large volumes of unstructured or semi-structured data. Unlike traditional relational databases (RDBMS) that use tables, MongoDB stores data in flexible, JSON-like BSON documents (Binary JSON). It is highly scalable, supports rapid development, and is widely used for modern web and mobile applications. ",
+    "built": {
+      "mongodb": "https://github.com/mongodb/mongo"
+    },
+    "comparison": {
+      "image": "mongo:4.4.30-focal"
+    }
+  },
+  "grype": {
+    "severity": "critical"
+  }
+}

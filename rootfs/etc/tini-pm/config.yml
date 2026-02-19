@@ -1,0 +1,10 @@
+services:
+  - name: "mongodb"
+    fail: true
+    bin: "/bin/bash"
+    arguments: ["/usr/local/bin/entrypoint.sh"]
+
+  - name: "backup"
+    fail: false
+    restart: true
+    bin: "/usr/local/bin/backup"

@@ -1,0 +1,146 @@
+package main
+
+import (
+	"os"
+	"os/exec"
+	"os/signal"
+	"syscall"
+	"fmt"
+	"time"
+	"bufio"
+	"io"
+	"github.com/go-co-op/gocron/v2"
+	"strings"
+	"strconv"
+	"slices"
+
+	"github.com/11notes/go/v2"
+)
+
+const SCHEDULE = "MONGODB_BACKUP_SCHEDULE"
+const RETENTION = "MONGODB_BACKUP_RETENTION"
+const ROOT = "/mongodb/backup"
+
+var (
+	retentionPoints int = 0
+)
+
+func main(){
+	// catch syscalls
+	signalChannel := make(chan os.Signal, 1)
+	signal.Notify(signalChannel, syscall.SIGTERM, syscall.SIGSTOP, syscall.SIGINT)
+	go func() {
+		<- signalChannel
+		os.Exit(0)
+	}()
+
+	// set backup schedule
+	if _, ok := os.LookupEnv(SCHEDULE); ok {
+		eleven.Log("inf", "setting schedule: " + os.Getenv(SCHEDULE))
+		scheduler, err := gocron.NewScheduler()
+		if err != nil {
+			eleven.Log("err", "cron error: " + err.Error())
+		}
+		_, err = scheduler.NewJob(gocron.CronJob(os.Getenv(SCHEDULE), false), gocron.NewTask(backup))
+		if err != nil {
+			eleven.Log("err", "cron error: " + err.Error())
+		}
+		scheduler.Start()
+	}
+
+	// set retention
+	if s, ok := os.LookupEnv(RETENTION); ok {
+		if i, err := strconv.Atoi(s); err == nil {
+			retentionPoints = i
+			eleven.Log("inf", fmt.Sprintf("setting retention to last %d point(s)", retentionPoints))
+		}
+	}
+	if(retentionPoints <= 0){
+		eleven.Log("inf", "disable retention")
+	}
+
+	// wait for schedule to execute
+	select {}
+}
+
+func backup(){
+	// create new path based on time stamp
+	backupPath := fmt.Sprintf("%s/%s", ROOT, time.Now().Format("20060102150405"))
+
+	// check if destination exists already
+	if _, err := os.Stat(backupPath); os.IsNotExist(err){
+
+		// prepare mongodump
+		cmd := exec.Command("mongodump", "--out", backupPath)
+		cmd.SysProcAttr = &syscall.SysProcAttr{Setpgid:true}
+
+		stdout, _ := cmd.StdoutPipe()
+		stderr, _ := cmd.StderrPipe()
+
+		go func() {
+			stdoutScanner := bufio.NewScanner(io.MultiReader(stdout,stderr))
+			for stdoutScanner.Scan() {
+				stdout := stdoutScanner.Text()
+				if ! strings.HasPrefix(stdout, "WARNING:  skipping special file"){
+					eleven.Log("inf", stdout)
+				}
+			}
+		}()
+
+		// start backup process
+		err := cmd.Start()
+		if err != nil {
+			eleven.Log("err", "backup error: " + err.Error())
+		}else{
+			err = cmd.Wait()
+			if err != nil {
+				eleven.Log("err", "backup error: " + err.Error())
+			}else{
+				// backup complete
+				if _, err := os.Stat(fmt.Sprintf("%s/%s", backupPath, "admin/system.version.bson")); !os.IsNotExist(err){
+					eleven.Log("inf", fmt.Sprintf("backup to %s complete", backupPath))
+					if(retentionPoints > 0){
+						retention()
+					}
+				}else{
+					eleven.Log("err", "backup error: " + err.Error())
+				}
+			}
+		}
+	}else{
+		eleven.Log("err", fmt.Sprintf("backup error: target %s exists already", backupPath))
+	}
+}
+
+func retention(){
+	ls, err := os.ReadDir(ROOT)
+	if err != nil {
+		eleven.Log("err", "retention error: " + err.Error())
+	}else{
+		var backups []string
+		for _, e := range ls {
+			if e.IsDir() {
+				backups = append(backups, ROOT + "/" + e.Name())
+			}
+		}
+		slices.Sort(backups)
+		slices.Reverse(backups)
+		if(len(backups) > 0){
+			if(len(backups) > retentionPoints){
+				// check retention settings
+				keep := backups[0:retentionPoints]
+				eleven.Log("inf", fmt.Sprintf("backup(s) in retention [%d]: %v", len(keep), keep))
+				remove := backups[retentionPoints:]
+				if(len(remove) > 0){
+					for _, backup := range remove {
+						os.RemoveAll(backup)
+					}
+					eleven.Log("inf", fmt.Sprintf("backups deleted [%d]: %v", len(remove), remove))
+				}
+			}else{
+				// no retention needed
+				eleven.Log("inf", fmt.Sprintf("backup(s) in retention [%d]: %v", len(backups), backups))
+			}
+		}
+	}
+}
