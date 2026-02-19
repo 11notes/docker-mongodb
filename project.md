@@ -8,7 +8,6 @@ ${{ github:> [!IMPORTANT] }}
 ${{ github:> }}* ... this image runs [rootless](https://github.com/11notes/RTFM/blob/main/linux/container/image/rootless.md) as 1000:1000
 ${{ github:> }}* ... this image has a health check
 ${{ github:> }}* ... this image runs read-only
-${{ github:> }}* ... this image is automatically scanned for CVEs before and after publishing
 ${{ github:> }}* ... this image is created via a secure and pinned CI/CD process
 ${{ github:> }}* ... this image is very small
 ${{ github:> }}* ... this image can take full backups on its own
