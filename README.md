@@ -1,7 +1,7 @@
 ![banner](https://raw.githubusercontent.com/11notes/static/refs/heads/main/img/banner/README.png)
 
 # MONGODB
-![size](https://img.shields.io/badge/image_size-344MB-green?color=%2338ad2d)![5px](https://raw.githubusercontent.com/11notes/static/refs/heads/main/img/markdown/transparent5x2px.png)![pulls](https://img.shields.io/docker/pulls/11notes/mongodb?color=2b75d6)![5px](https://raw.githubusercontent.com/11notes/static/refs/heads/main/img/markdown/transparent5x2px.png)[<img src="https://img.shields.io/github/issues/11notes/docker-mongodb?color=7842f5">](https://github.com/11notes/docker-mongodb/issues)![5px](https://raw.githubusercontent.com/11notes/static/refs/heads/main/img/markdown/transparent5x2px.png)![swiss_made](https://img.shields.io/badge/Swiss_Made-FFFFFF?labelColor=FF0000&logo=data:image/svg%2bxml;base64,PHN2ZyB2ZXJzaW9uPSIxIiB3aWR0aD0iNTEyIiBoZWlnaHQ9IjUxMiIgdmlld0JveD0iMCAwIDMyIDMyIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPgogIDxyZWN0IHdpZHRoPSIzMiIgaGVpZ2h0PSIzMiIgZmlsbD0idHJhbnNwYXJlbnQiLz4KICA8cGF0aCBkPSJtMTMgNmg2djdoN3Y2aC03djdoLTZ2LTdoLTd2LTZoN3oiIGZpbGw9IiNmZmYiLz4KPC9zdmc+)
+![size](https://img.shields.io/badge/image_size-196MB-green?color=%2338ad2d)![5px](https://raw.githubusercontent.com/11notes/static/refs/heads/main/img/markdown/transparent5x2px.png)![pulls](https://img.shields.io/docker/pulls/11notes/mongodb?color=2b75d6)![5px](https://raw.githubusercontent.com/11notes/static/refs/heads/main/img/markdown/transparent5x2px.png)[<img src="https://img.shields.io/github/issues/11notes/docker-mongodb?color=7842f5">](https://github.com/11notes/docker-mongodb/issues)![5px](https://raw.githubusercontent.com/11notes/static/refs/heads/main/img/markdown/transparent5x2px.png)![swiss_made](https://img.shields.io/badge/Swiss_Made-FFFFFF?labelColor=FF0000&logo=data:image/svg%2bxml;base64,PHN2ZyB2ZXJzaW9uPSIxIiB3aWR0aD0iNTEyIiBoZWlnaHQ9IjUxMiIgdmlld0JveD0iMCAwIDMyIDMyIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPgogIDxyZWN0IHdpZHRoPSIzMiIgaGVpZ2h0PSIzMiIgZmlsbD0idHJhbnNwYXJlbnQiLz4KICA8cGF0aCBkPSJtMTMgNmg2djdoN3Y2aC03djdoLTZ2LTdoLTd2LTZoN3oiIGZpbGw9IiNmZmYiLz4KPC9zdmc+)
 
 run mongodb rootless
 
@@ -32,8 +32,8 @@ Below you find a comparison between this image and the most used or original one
 
 | **image** | **size on disk** | **init default as** | **[distroless](https://github.com/11notes/RTFM/blob/main/linux/container/image/distroless.md)** | supported architectures
 | ---: | ---: | :---: | :---: | :---: |
-| 11notes/mongodb | 344MB | 1000:1000 | ❌ | amd64 |
-| mongo | 594MB | 0:0 | ❌ | amd64, arm64v8 |
+| 11notes/mongodb | 196MB | 1000:1000 | ❌ | amd64 |
+| mongo | 409MB | 0:0 | ❌ | amd64, arm64v8 |
 
 # VOLUMES 📁
 * **/mongodb/var** - Directory of database files
@@ -65,9 +65,6 @@ services:
     volumes:
       - "mongodb.var:/mongodb/var"
       - "mongodb.backup:/mongodb/backup"
-    tmpfs:
-      # needed because the image runs read-only
-      - "/mongodb/run:uid=1000,gid=1000"
     restart: "always"
 
 volumes:
@@ -141,7 +138,11 @@ This image supports nobody by default. Simply add **-nobody** to any tag and the
 >* Use a reverse proxy like Traefik, Nginx, HAproxy to terminate TLS and to protect your endpoints
 >* Use Let’s Encrypt DNS-01 challenge to obtain valid SSL certificates for your services
 
+# CAUTION ⚠️
+> [!CAUTION]
+>* Do not expose the EOL version to anything except the app that requires it. Use ```internal: true``` docker or container networks **only!**
+
 # ElevenNotes™️
 This image is provided to you at your own risk. Always make backups before updating an image to a different version. Check the [releases](https://github.com/11notes/docker-mongodb/releases) for breaking changes. If you have any problems with using this image simply raise an [issue](https://github.com/11notes/docker-mongodb/issues), thanks. If you have a question or inputs please create a new [discussion](https://github.com/11notes/docker-mongodb/discussions) instead of an issue. You can find all my other repositories on [github](https://github.com/11notes?tab=repositories).
 
-*created 19.02.2026, 18:33:00 (CET)*
+*created 23.02.2026, 13:51:21 (CET)*
