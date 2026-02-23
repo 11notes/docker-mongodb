@@ -12,6 +12,9 @@
     "built": {
       "mongodb": "https://github.com/mongodb/mongo"
     },
+    "parent": {
+      "image": "11notes/debian:12"
+    },
     "comparison": {
       "image": "mongo:4.4.30-focal"
     }
