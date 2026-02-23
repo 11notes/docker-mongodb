@@ -10,7 +10,7 @@ run mongodb rootless
 [MongoDB](https://github.com/mongodb/mongo) (created by [mongodb](https://github.com/mongodb/)) the popular, open-source NoSQL document-oriented database designed for handling large volumes of unstructured or semi-structured data. Unlike traditional relational databases (RDBMS) that use tables, MongoDB stores data in flexible, JSON-like BSON documents (Binary JSON). It is highly scalable, supports rapid development, and is widely used for modern web and mobile applications. 
 
 # SYNOPSIS 📖
-**What can I do with this?** This image will run mongodb rootless withouth any authentication. Why so simple? Because 99.9% of all containers that need mongodb, are happy with the default settings, no different dbname, different dbuser, whatever needed. It also adds a simple backup scheduler that will backup your database if ```MONGODB_BACKUP_SCHEDULE``` is set, including a retention manager. Since this image has by default no authentication, you must make sure it’s only reachable via an ```internal: true``` network and only attach containers to the same network that need direct access to MongoDB.
+**What can I do with this?** This image will run mongodb rootless withouth any authentication. Why so simple? Because 99.9% of all containers that need mongodb, are happy with the default settings, no different dbuser, whatever needed. It also adds a simple backup scheduler that will backup your database if ```MONGODB_BACKUP_SCHEDULE``` is set, including a retention manager. Since this image has by default no authentication, you must make sure it’s only reachable via an ```internal: true``` network and only attach containers to the same network that need direct access to MongoDB. This image is also skipping all informal logs to quiet it down and only show errors.
 
 **Supported MongoDB versions:** 4.4.30 (EOL, but no AVX required from your CPU)
 
@@ -145,4 +145,4 @@ This image supports nobody by default. Simply add **-nobody** to any tag and the
 # ElevenNotes™️
 This image is provided to you at your own risk. Always make backups before updating an image to a different version. Check the [releases](https://github.com/11notes/docker-mongodb/releases) for breaking changes. If you have any problems with using this image simply raise an [issue](https://github.com/11notes/docker-mongodb/issues), thanks. If you have a question or inputs please create a new [discussion](https://github.com/11notes/docker-mongodb/discussions) instead of an issue. You can find all my other repositories on [github](https://github.com/11notes?tab=repositories).
 
-*created 23.02.2026, 15:16:43 (CET)*
+*created 23.02.2026, 15:22:38 (CET)*
