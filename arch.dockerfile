@@ -51,20 +51,24 @@
 
   RUN set -ex; \
     apt update -y; \
-    apt install -y \
-      libcurl4;
+    apt install --no-install-recommends -y \
+      libcurl4; \
+    apt clean -y; \
+    rm -rf /var/lib/apt/lists/*;      
 
   RUN set -ex; \
     dpkg -i /tmp/libssl1.1.deb; \
     dpkg -i /tmp/mongodb-org-server.deb || echo "true"; \
-    dpkg -i /tmp/mongodb-database-tools.deb; \
-    rm -rf /tmp/*;
+    dpkg -i /tmp/mongodb-database-tools.deb;
 
   RUN set -ex; \
     find /bin /sbin /usr/bin /usr/sbin -type f -executable \
       -name "mongo*" \
     -exec /usr/local/bin/ds {} ';'; \
     /usr/local/bin/ds --bye;
+
+  RUN set -ex; \
+    eleven cleanup;
 
 # :: FILE SYSTEM
   FROM alpine AS file-system
