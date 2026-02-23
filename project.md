@@ -22,8 +22,6 @@ ${{ title_volumes }}
 
 ${{ content_compose }}
 
-${{ content_build }}
-
 ${{ content_defaults }}
 
 ${{ content_environment }}
