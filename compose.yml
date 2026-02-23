@@ -22,9 +22,6 @@ services:
     volumes:
       - "mongodb.var:/mongodb/var"
       - "mongodb.backup:/mongodb/backup"
-    tmpfs:
-      # needed because the image runs read-only
-      - "/mongodb/run:uid=1000,gid=1000"
     restart: "always"
 
 volumes:
