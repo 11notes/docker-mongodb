@@ -37,3 +37,7 @@ ${{ content_parent }}
 ${{ content_built }}
 
 ${{ content_tips }}
+
+${{ title_caution }}
+${{ github:> [!CAUTION] }}
+${{ github:> }}* Do not expose the EOL version to anything except the app that requires it. Use ```internal: true``` docker or container networks **only!**
