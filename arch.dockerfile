@@ -47,7 +47,7 @@
   USER root
   ADD http://security.debian.org/debian-security/pool/updates/main/o/openssl/libssl1.1_1.1.1w-0+deb11u4_${TARGETARCH}.deb /tmp/libssl1.1.deb
   ADD https://repo.mongodb.org/apt/ubuntu/dists/focal/mongodb-org/4.4/multiverse/binary-${TARGETARCH}/mongodb-org-server_4.4.30_${TARGETARCH}.deb /tmp/mongodb-org-server.deb
-  ADD https://repo.mongodb.org/apt/debian/dists/bookworm/mongodb-org/4.4/main/binary-${TARGETARCH}/mongodb-database-tools_100.9.5~90481484_${TARGETARCH}.deb /tmp/mongodb-database-tools.deb
+  ADD https://repo.mongodb.org/apt/ubuntu/dists/focal/mongodb-org/4.4/multiverse/binary-${TARGETARCH}/mongodb-database-tools_100.9.5~90481484_${TARGETARCH}.deb /tmp/mongodb-database-tools.deb
   ENV DEBIAN_FRONTEND=noninteractive
 
   RUN set -ex; \
