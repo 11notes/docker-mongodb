@@ -3,6 +3,8 @@ services:
     fail: true
     bin: "/bin/bash"
     arguments: ["/usr/local/bin/entrypoint.sh"]
+    environment:
+      TINI_PM_EXCLUDE_LOG: '"s":"I"'
 
   - name: "backup"
     fail: false
