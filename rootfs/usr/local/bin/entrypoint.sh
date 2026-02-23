@@ -6,8 +6,7 @@
       --noauth \
       --dbpath /mongodb/var \
       --nounixsocket \
-      --quiet \
-      --redactClientLogData
+      --quiet
     eleven log start
   fi
 
