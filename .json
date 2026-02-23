@@ -1,6 +1,6 @@
 {
   "image": "11notes/mongodb",
-  "platform":"amd64",
+  "platform":"amd64,arm64",
   "name": "mongodb",
   "root": "/mongodb",
   "semver": {

@@ -43,18 +43,16 @@
   FROM 11notes/debian:12 AS build
   COPY --from=util / /
   COPY --from=distroless-ds / /
+  ARG TARGETARCH
   USER root
-  ADD http://security.debian.org/debian-security/pool/updates/main/o/openssl/libssl1.1_1.1.1w-0+deb11u4_amd64.deb /tmp/libssl1.1.deb
-  ADD https://repo.mongodb.org/apt/debian/dists/buster/mongodb-org/4.4/main/binary-amd64/mongodb-org-server_4.4.30_amd64.deb /tmp/mongodb-org-server.deb
-  ADD https://repo.mongodb.org/apt/debian/dists/bookworm/mongodb-org/4.4/main/binary-amd64/mongodb-database-tools_100.9.5~90481484_amd64.deb /tmp/mongodb-database-tools.deb
+  ADD http://security.debian.org/debian-security/pool/updates/main/o/openssl/libssl1.1_1.1.1w-0+deb11u4_${TARGETARCH}.deb /tmp/libssl1.1.deb
+  ADD https://repo.mongodb.org/apt/debian/dists/buster/mongodb-org/4.4/main/binary-${TARGETARCH}/mongodb-org-server_4.4.30_${TARGETARCH}.deb /tmp/mongodb-org-server.deb
+  ADD https://repo.mongodb.org/apt/debian/dists/bookworm/mongodb-org/4.4/main/binary-${TARGETARCH}/mongodb-database-tools_100.9.5~90481484_${TARGETARCH}.deb /tmp/mongodb-database-tools.deb
   ENV DEBIAN_FRONTEND=noninteractive
 
   RUN set -ex; \
-    apt update -y; \
-    apt install --no-install-recommends -y \
-      libcurl4; \
-    apt clean -y; \
-    rm -rf /var/lib/apt/lists/*;      
+    eleven apt install \
+      libcurl4;
 
   RUN set -ex; \
     dpkg -i /tmp/libssl1.1.deb; \
