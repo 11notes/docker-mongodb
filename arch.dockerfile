@@ -4,7 +4,8 @@
 # GLOBAL
   ARG APP_UID=1000 \
       APP_GID=1000 \
-      APP_VERSION=0
+      APP_VERSION=0 \
+      APP_GO_VERSION=0
 
 # :: FOREIGN IMAGES
   FROM 11notes/util AS util
@@ -16,7 +17,7 @@
 # ║                       BUILD                         ║
 # ╚═════════════════════════════════════════════════════╝
 # :: BACKUP
-  FROM 11notes/go:1.25 AS backup
+  FROM 11notes/go:${APP_GO_VERSION} AS backup
   COPY ./build /
 
   RUN set -ex; \
@@ -28,7 +29,7 @@
 
 
 # :: HEALTHCHECK
-  FROM 11notes/go:1.25 AS healthcheck
+  FROM 11notes/go:${APP_GO_VERSION} AS healthcheck
   COPY ./build /
 
   RUN set -ex; \
