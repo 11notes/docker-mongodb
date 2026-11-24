@@ -74,16 +74,16 @@
     cp /tmp/mongo/bin/mongod ${BUILD_ROOT}${BUILD_BIN}/mongod;
 
   RUN set -ex; \
-    ds ${BUILD_ROOT}${BUILD_BIN}/mongod; \
-    ds --bye;
-
-  RUN set -ex; \
     ldd ${BUILD_ROOT}${BUILD_BIN}/mongod \
       | grep -oE '/[^ ]+' \
       | sort -u \
       | while read -r LIB; do \
           cp --parents -L "${LIB}" ${BUILD_ROOT}; \
         done;
+
+  RUN set -ex; \
+    ds ${BUILD_ROOT}${BUILD_BIN}/mongod; \
+    ds --bye;
 
   RUN set -ex; \
     # check built version against desired version
