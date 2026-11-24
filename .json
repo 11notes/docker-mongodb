@@ -1,10 +1,10 @@
 {
   "image": "11notes/mongodb",
-  "platform":"amd64,arm64",
+  "platform": "amd64,arm64",
   "name": "mongodb",
   "root": "/mongodb",
   "semver": {
-    "version": "9.0.2"
+    "version": "9.0.8"
   },
   "readme": {
     "description": "run mongodb rootless and distroless",
