@@ -9,6 +9,7 @@
 
 # :: FOREIGN IMAGES
   FROM 11notes/util AS util
+  FROM 11notes/distroless AS distroless
   FROM 11notes/distroless:tini-pm AS distroless-tini-pm
   FROM 11notes/distroless:ds AS distroless-ds
 
@@ -41,33 +42,53 @@
 
 
 # :: MONGODB
-  FROM 11notes/debian:12 AS build
-  COPY --from=util / /
+  FROM debian:bookworm-slim AS build
   COPY --from=distroless-ds / /
-  ARG TARGETARCH
-  USER root
-  ADD http://security.debian.org/debian-security/pool/updates/main/o/openssl/libssl1.1_1.1.1w-0+deb11u4_${TARGETARCH}.deb /tmp/libssl1.1.deb
-  ADD https://repo.mongodb.org/apt/ubuntu/dists/focal/mongodb-org/4.4/multiverse/binary-${TARGETARCH}/mongodb-org-server_4.4.30_${TARGETARCH}.deb /tmp/mongodb-org-server.deb
-  ADD https://repo.mongodb.org/apt/ubuntu/dists/focal/mongodb-org/4.4/multiverse/binary-${TARGETARCH}/mongodb-database-tools_100.9.5~90481484_${TARGETARCH}.deb /tmp/mongodb-database-tools.deb
-  ENV DEBIAN_FRONTEND=noninteractive
+  ARG TARGETARCH \
+      APP_UID \
+      APP_GID \
+      APP_VERSION \
+      BUILD_ROOT=/distroless \
+      BUILD_BIN=/opt/mongodb/bin
 
   RUN set -ex; \
-    eleven apt install \
-      libcurl4;
+    apt-get update; \
+    apt-get install -y --no-install-recommends \
+      ca-certificates \
+      curl \
+      libcurl4 \
+      libssl3 \
+      liblzma5 \
+      binutils \
+      xz-utils;
 
   RUN set -ex; \
-    dpkg -i /tmp/libssl1.1.deb; \
-    dpkg -i /tmp/mongodb-org-server.deb || echo "true"; \
-    dpkg -i /tmp/mongodb-database-tools.deb;
+    case "${TARGETARCH}" in \
+      amd64) MONGO_ARCH="x86_64-ubuntu2204";; \
+      arm64) MONGO_ARCH="aarch64-ubuntu2204";; \
+    esac; \
+    mkdir -p /tmp/mongo; \
+    curl -fsSL "https://fastdl.mongodb.org/linux/mongodb-linux-${MONGO_ARCH}-${APP_VERSION}.tgz" \
+      | tar -xz --strip-components=1 -C /tmp/mongo; \
+    mkdir -p ${BUILD_ROOT}${BUILD_BIN}; \
+    cp /tmp/mongo/bin/mongod ${BUILD_ROOT}${BUILD_BIN}/mongod;
 
   RUN set -ex; \
-    find /bin /sbin /usr/bin /usr/sbin -type f -executable \
-      -name "mongo*" \
-    -exec /usr/local/bin/ds {} ';'; \
-    /usr/local/bin/ds --bye;
+    ds ${BUILD_ROOT}${BUILD_BIN}/mongod; \
+    ds --bye;
 
   RUN set -ex; \
-    eleven cleanup;
+    ldd ${BUILD_ROOT}${BUILD_BIN}/mongod \
+      | grep -oE '/[^ ]+' \
+      | sort -u \
+      | while read -r LIB; do \
+          cp --parents -L "${LIB}" ${BUILD_ROOT}; \
+        done;
+
+  RUN set -ex; \
+    # check built version against desired version
+    ${BUILD_ROOT}${BUILD_BIN}/mongod --version | grep -q "${APP_VERSION}"
+
 
 # :: FILE SYSTEM
   FROM alpine AS file-system
@@ -75,10 +96,22 @@
   ARG APP_ROOT
 
   RUN set -ex; \
+    mkdir -p /distroless${APP_ROOT}/etc; \
     mkdir -p /distroless${APP_ROOT}/var; \
-    mkdir -p /distroless${APP_ROOT}/run; \
-    mkdir -p /distroless${APP_ROOT}/backup; \
-    chmod +x -R /distroless/usr/local/bin;
+    mkdir -p /distroless${APP_ROOT}/backup;
+
+  RUN set -ex; \
+    printf '%s\n' \
+      'storage:' \
+      '  dbPath: /mongodb/var' \
+      'net:' \
+      '  port: 27017' \
+      '  bindIp: 0.0.0.0' \
+      '  unixDomainSocket:' \
+      '    enabled: false' \
+      'processManagement:' \
+      '  fork: false' \
+      > /distroless${APP_ROOT}/etc/mongod.conf;
 
 
 # ╔═════════════════════════════════════════════════════╗
@@ -106,11 +139,9 @@
         APP_VERSION=${APP_VERSION} \
         APP_ROOT=${APP_ROOT}
 
-  # :: app specific environment
-    ENV DEBIAN_FRONTEND=noninteractive
-
   # :: multi-stage
-    COPY --from=build / /
+    COPY --from=distroless / /
+    COPY --from=build /distroless/ /
     COPY --from=backup /distroless/ /
     COPY --from=healthcheck /distroless/ /
     COPY --from=file-system --chown=${APP_UID}:${APP_GID} /distroless/ /

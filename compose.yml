@@ -9,7 +9,7 @@ x-lockdown: &lockdown
 
 services:
   mongodb:
-    image: "11notes/mongodb:4.4.30"
+    image: "11notes/mongodb:9.0.8"
     <<: *lockdown
     environment:
       TZ: "Europe/Zurich"

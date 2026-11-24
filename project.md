@@ -1,11 +1,12 @@
-${{ content_synopsis }} This image will run mongodb rootless withouth any authentication. Why so simple? Because 99.9% of all containers that need mongodb, are happy with the default settings, no different dbuser, whatever needed. It also adds a simple backup scheduler that will backup your database if ```MONGODB_BACKUP_SCHEDULE``` is set, including a retention manager. Since this image has by default no authentication, you must make sure it’s only reachable via an ```internal: true``` network and only attach containers to the same network that need direct access to MongoDB. This image is also skipping all informal logs to quiet it down and only show errors.
+${{ content_synopsis }} This image will run mongodb [rootless](https://github.com/11notes/RTFM/blob/main/linux/container/image/rootless.md) and [distroless](https://github.com/11notes/RTFM/blob/main/linux/container/image/distroless.md) withouth any authentication. Why so simple? Because 99.9% of all containers that need mongodb, are happy with the default settings, no different dbuser, whatever needed. It also adds a simple backup scheduler that will backup your database if ```MONGODB_BACKUP_SCHEDULE``` is set, including a retention manager. Since this image has by default no authentication, you must make sure it’s only reachable via an ```internal: true``` network and only attach containers to the same network that need direct access to MongoDB. This image is also skipping all informal logs to quiet it down and only show errors.
 
-**Supported MongoDB versions:** 4.4.30 (EOL, but no AVX required from your CPU)
+**Supported MongoDB versions:** 4.4.30 (EOL, but no AVX required from your CPU), 9
 
 ${{ content_uvp }} Good question! Because ...
 
 ${{ github:> [!IMPORTANT] }}
 ${{ github:> }}* ... this image runs [rootless](https://github.com/11notes/RTFM/blob/main/linux/container/image/rootless.md) as 1000:1000
+${{ github:> }}* ... this image has no shell since it is [distroless](https://github.com/11notes/RTFM/blob/main/linux/container/image/distroless.md)
 ${{ github:> }}* ... this image has a health check
 ${{ github:> }}* ... this image runs read-only
 ${{ github:> }}* ... this image is created via a secure and pinned CI/CD process
@@ -35,7 +36,3 @@ ${{ content_parent }}
 ${{ content_built }}
 
 ${{ content_tips }}
-
-${{ title_caution }}
-${{ github:> [!CAUTION] }}
-${{ github:> }}* Do not expose the EOL version to anything except the app that requires it. Use ```internal: true``` docker or container networks **only!**
