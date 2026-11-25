@@ -22,13 +22,18 @@ provider "helm" {
   }
 }
 
+resource "kubernetes_namespace_v1" "mongodb" {
+  metadata {
+    name = "mongodb"
+  }
+}
+
 resource "helm_release" "mongodb" {
   name = "mongodb"
   repository = "oci://ghcr.io/11notes/charts"
   chart = "mongodb"
-  namespace = "mongodb"
-  create_namespace = true
-  version = "0.0.1"
+  namespace = kubernetes_namespace_v1.mongodb.metadata[0].name
+  version = "0.0.2"
 
   wait = true
   wait_for_jobs = true
@@ -37,7 +42,7 @@ resource "helm_release" "mongodb" {
     yamlencode({
       persistence = {
         var = {
-          size: "16Gi"
+          size = "16Gi"
         }
       }
     })
