@@ -52,10 +52,14 @@ spec:
           env:
             - name: TZ
               value: {{ .Values.timezone | quote }}
+            {{- if .Values.mongodb.backup.schedule }}
             - name: MONGODB_BACKUP_SCHEDULE
               value: {{ .Values.mongodb.backup.schedule | quote }}
+            {{- if .Values.mongodb.backup.retention }}
             - name: MONGODB_BACKUP_RETENTION
-              value: {{ .Values.mongodb.backup.retention | quote }}
+              value: {{ .Values.mongodb.backup.retention | int | quote }}
+            {{- end }}
+            {{- end }}
             {{- with .Values.extraEnv }}
             {{- toYaml . | nindent 12 }}
             {{- end }}
