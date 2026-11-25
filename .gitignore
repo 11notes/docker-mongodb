@@ -1,1 +1,3 @@
 maintain/
+*.tfvars
+*.env
