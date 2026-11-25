@@ -1,0 +1,80 @@
+image:
+  repository: 11notes/mongodb
+  tag: ""
+  pullPolicy: IfNotPresent
+
+replicaCount: 1
+nameOverride: ""
+fullnameOverride: ""
+timezone: "Europe/Zurich"
+
+mongodb:
+  backup:
+    schedule: ""
+    retention: 0
+
+extraEnv: []
+service:
+  type: ClusterIP
+  dbPort: 27017
+  annotations: {}
+
+podSecurityContext:
+  fsGroupChangePolicy: "OnRootMismatch"
+
+containerSecurityContext:
+  runAsUser: 1000
+  runAsGroup: 1000
+  allowPrivilegeEscalation: false
+  readOnlyRootFilesystem: true
+
+resources: {}
+
+nodeSelector: {}
+tolerations: []
+affinity: {}
+
+podAnnotations: {}
+podLabels: {}
+
+persistence:
+  var:
+    enabled: true
+    existingClaim: ""
+    storageClass: ""
+    accessModes:
+      - ReadWriteOnce
+    size: 1Gi
+
+  backup:
+    enabled: false
+    existingClaim: ""
+    storageClass: ""
+    accessModes:
+      - ReadWriteOnce
+    size: 1Gi
+
+startupProbe:
+  exec:
+    command:
+      - healthcheck
+  periodSeconds: 5
+  timeoutSeconds: 5
+  failureThreshold: 60
+
+readinessProbe:
+  exec:
+    command:
+      - healthcheck
+  periodSeconds: 10
+  timeoutSeconds: 5
+  failureThreshold: 3
+  successThreshold: 1
+
+livenessProbe:
+  exec:
+    command:
+      - healthcheck
+  periodSeconds: 20
+  timeoutSeconds: 10
+  failureThreshold: 6
