@@ -2,7 +2,7 @@ apiVersion: v2
 name: mongodb
 description: run mongodb rootless and distroless on k8s
 type: application
-version: 0.0.1
+version: 0.0.2
 appVersion: 9.0.8
 home: https://github.com/11notes/docker-mongodb
 sources:

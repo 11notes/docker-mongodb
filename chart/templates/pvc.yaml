@@ -1,5 +1,5 @@
 {{- range $vol, $cfg := $.Values.persistence }}
-{{- if not $cfg.existingClaim }}
+{{- if and $cfg.enabled (not $cfg.existingClaim) }}
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
